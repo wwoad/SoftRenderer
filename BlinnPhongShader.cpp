@@ -11,13 +11,15 @@ void BlinnPhongShader::vertexShader(Vertex& vertex)
 void BlinnPhongShader::fragmentShader(Fragment& fragment)
 {
     Color diffuseColor = {0.5f, 0.5f, 0.5f};
-    Color specularColor = {0.9f, 0.9f, 0.9f};
+    Color specularColor = {0.2f, 0.2f, 0.2f};
     auto& rendererDevice = SRendererDevice::getInstance();
-    if(m_material.diffuse != -1){
-        diffuseColor = rendererDevice.m_textureList[m_material.diffuse].sample2D(fragment.texCoord);
-    }
-    if(m_material.specular != -1){
-        specularColor = rendererDevice.m_textureList[m_material.specular].sample2D(fragment.texCoord);
+    if(SHADERTEXTURE){
+        if(m_material.diffuse != -1){
+            diffuseColor = rendererDevice.m_textureList[m_material.diffuse].sample2D(fragment.texCoord);
+        }
+        if(m_material.specular != -1){
+            specularColor = rendererDevice.m_textureList[m_material.specular].sample2D(fragment.texCoord);
+        }
     }
 
     Vector3D normal = glm::normalize(fragment.normal);
