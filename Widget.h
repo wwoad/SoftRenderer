@@ -59,6 +59,8 @@ private slots:
 
     void on_actionSIMD_triggered();
 
+    void on_actionTexture_triggered();
+
 private:
     Ui::Widget *ui;
     QColor m_specularColor;
