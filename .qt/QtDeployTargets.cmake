@@ -1,0 +1,4 @@
+set(__QT_DEPLOY_TARGET_SoftRendererCore_FILE /home/wongh/MyProject/SoftRenderer/libs/libSoftRendererCore.a)
+set(__QT_DEPLOY_TARGET_SoftRendererCore_TYPE STATIC_LIBRARY)
+set(__QT_DEPLOY_TARGET_SoftRenderer_FILE /home/wongh/MyProject/SoftRenderer/SoftRenderer)
+set(__QT_DEPLOY_TARGET_SoftRenderer_TYPE EXECUTABLE)

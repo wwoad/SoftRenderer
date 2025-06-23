@@ -1,0 +1,12 @@
+newmtl Material.001
+Ns 32.0 
+Ka 1.0 1.0 1.0    
+Kd 1.0 1.0 1.0    
+Ks 0.5 0.5 0.5              
+Ni 1.000000
+d 1.000000
+map_Kd african_head_diffuse.tga      
+map_Ks african_head_spec.tga         
+map_Bump african_head_nm.tga        
+
+
