@@ -197,21 +197,28 @@ void RenderWidget::render()
     renderDevice.clearBuffer(); // 清屏
     if(this->m_model == nullptr){return;}
 
-    qint64 elapsed = fpsUpdateElapsedTimer.elapsed();
-    fpsUpdateElapsedTimer.restart(); // 重启计时器以测量下一帧时间
-    deltaTime = elapsed / 1000.0f; // 将毫秒转换为秒
-    accumulatedDeltaTime += deltaTime;
-    frameCount++;
-
-    if (fpsUpdateElapsedTimer.hasExpired(FPS_UPDATE_INTERVAL_MS)) {
-
-        float avgDeltaTime = accumulatedDeltaTime / frameCount;
-        float currentFPS = (avgDeltaTime > 0) ? (1.0f / avgDeltaTime) : 0.0f;
-        ui->FPSLabel->setText(QString("FPS : %1").arg(currentFPS, 0, 'f', 0));
-        // 重置计数器和累积时间
-        frameCount = 0;
-        accumulatedDeltaTime = 0.0f;
+    int nowTime = QTime::currentTime().msecsSinceStartOfDay();
+    if(lastFrameTime != 0){
+        deltaTime = nowTime - lastFrameTime;
+        ui->FPSLabel->setText(QString("FPS : %1").arg(1000.0 / deltaTime, 0, 'f', 0));
     }
+    lastFrameTime = nowTime;
+
+    // qint64 elapsed = fpsUpdateElapsedTimer.elapsed();
+    // fpsUpdateElapsedTimer.restart(); // 重启计时器以测量下一帧时间
+    // deltaTime = elapsed / 1000.0f; // 将毫秒转换为秒
+    // accumulatedDeltaTime += deltaTime;
+    // frameCount++;
+
+    // if (fpsUpdateElapsedTimer.hasExpired(FPS_UPDATE_INTERVAL_MS)) {
+
+    //     float avgDeltaTime = accumulatedDeltaTime / frameCount;
+    //     float currentFPS = (avgDeltaTime > 0) ? (1.0f / avgDeltaTime) : 0.0f;
+    //     ui->FPSLabel->setText(QString("FPS : %1").arg(currentFPS, 0, 'f', 0));
+    //     // 重置计数器和累积时间
+    //     frameCount = 0;
+    //     accumulatedDeltaTime = 0.0f;
+    // }
 
     processInput();
     renderDevice.m_shader->m_modelTransformation = m_model->getModelTansformation();

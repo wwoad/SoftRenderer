@@ -4,6 +4,8 @@
 #include "Shader.h"
 #include "Texture.h"
 
+extern bool SHADERTEXTURE;
+
 class BlinnPhongShader : public Shader
 {
 public:

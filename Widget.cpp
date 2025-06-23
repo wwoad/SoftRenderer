@@ -2,6 +2,7 @@
 #include "RenderWidget.h"
 #include "ui_Widget.h"
 
+bool SHADERTEXTURE = false;
 
 Widget::Widget(QWidget *parent)
     : QMainWindow(parent)
@@ -105,7 +106,7 @@ void Widget::initSignalAndSlot()
                 ui->TriangleNumber->setText(QString::number(triangleCount));
                 ui->VertexNumber->setText(QString::number(vertexCount));
             });
-    ui->MeshcheckBox->checkState();
+    ui->actionTexture->setCheckable(true);
 }
 
 void Widget::on_actionopen_file_triggered()
@@ -214,6 +215,17 @@ void Widget::on_actionSIMD_triggered()
     }
     else{
         ui->renderWidget->setSIMD(false);
+    }
+}
+
+
+void Widget::on_actionTexture_triggered()
+{
+    if(ui->actionTexture->isChecked()){
+        SHADERTEXTURE = true;
+    }
+    else{
+        SHADERTEXTURE = false;
     }
 }
 

@@ -721,6 +721,7 @@
     <addaction name="actionMultithread"/>
     <addaction name="actionFaceCulling"/>
     <addaction name="actionSIMD"/>
+    <addaction name="actionTexture"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSetting"/>
@@ -766,6 +767,14 @@
    </property>
    <property name="text">
     <string>SIMD</string>
+   </property>
+  </action>
+  <action name="actionTexture">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Texture</string>
    </property>
   </action>
  </widget>
