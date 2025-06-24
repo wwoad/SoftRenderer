@@ -1,7 +1,7 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
-
+#include <QFileInfo>
 #include <QFileDialog>
 #include <QMainWindow>
 #include "RenderWidget.h"
@@ -37,6 +37,7 @@ public:
 private slots:
     void on_actionopen_file_triggered();
 
+    // void on_actionsave_image_triggered();
     void on_actionsave_image_triggered();
 
     void on_MeshcheckBox_checkStateChanged(const Qt::CheckState &arg1);

@@ -29,6 +29,7 @@ void SRFrameBuffer::setPixel(int x, int y, const Color& color) //着色像素点
 
 bool SRFrameBuffer::saveImage(QString filePath)
 {
+     std::cout << "it is  SRFrameBuffer::saveImage" << std::endl;
     return m_colorBuffer.save(filePath);
 }
 

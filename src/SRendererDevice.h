@@ -8,12 +8,14 @@
 #include <atomic>
 #include <optional>
 #include <immintrin.h>
+#include "tbb/parallel_for.h"
+#include "tbb/parallel_for_each.h"
+#include "tbb/blocked_range3d.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "threadpool.h"
 #include "SRFrameBuffer.h"
 #include "BasicDataStructure.h"
-
 
 struct EdgeEquation //三角形(中某点)对应的边缘方程
 {
@@ -51,13 +53,14 @@ struct EdgeEquationSimd
 
 class Shader;
 
-
 class SRendererDevice
 {
 public:
+
     RendererMode m_rendererMode;
-    bool m_faceCulling; // 面剔除
-    bool m_multiThread; // 多线程加速
+    bool m_faceCulling;
+    bool m_multiThread;
+    bool m_tbbThread;
     bool m_simd;
     std::vector<Vertex> m_vertexList; // 存储模型顶点
     std::vector<unsigned> m_indices;  // 存储模型顶点的绘制顺序

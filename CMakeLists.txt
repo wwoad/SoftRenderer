@@ -17,10 +17,9 @@ set(PROJECT ${PROJECT_SOURCE_DIR})
 set(SRCPATH ${PROJECT_SOURCE_DIR}/src)
 set(glm_PATH ${PROJECT_SOURCE_DIR}/dependences)
 set(assimp_PATH ${PROJECT_SOURCE_DIR}/dependences/assimp/include)
+set(tbb_PATH ${PROJECT_SOURCE_DIR}/dependences/tbb/include)
 set(LIBPATH ${PROJECT_SOURCE_DIR}/libs)
 set(SRCLIB SoftRendererCore)
-
-
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui)
@@ -38,11 +37,11 @@ set(PROJECT_SOURCES
     main.cpp
 )
 
-
 include_directories(${PROJECT})
 include_directories(${glm_PATH})
 include_directories(${assimp_PATH})
 include_directories(${SRCPATH})
+include_directories(${tbb_PATH})
 
 
 link_directories(${PROJECT_SOURCE_DIR}/libs)
@@ -51,7 +50,9 @@ qt_add_executable(SoftRenderer ${PROJECT_SOURCES}
 )
 
 target_compile_options(SoftRenderer PRIVATE -mavx)
+target_compile_options(SoftRenderer PRIVATE -Wno-changes-meaning)
 target_link_libraries(SoftRenderer PRIVATE assimp)
+target_link_libraries(SoftRenderer PRIVATE tbb)
 target_link_libraries(SoftRenderer PRIVATE SoftRendererCore Qt6::Widgets Qt6::Core Qt6::Gui)
 
 

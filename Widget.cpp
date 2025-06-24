@@ -117,6 +117,7 @@ void Widget::on_actionopen_file_triggered()
     if(!modelFilelPath.isEmpty()){
         std::cout << " loading model" << std::endl;
         ui->renderWidget->loadmodel(modelFilelPath);
+        ui->MeshcheckBox->setChecked(true);
     }
 
     else{
@@ -127,11 +128,32 @@ void Widget::on_actionopen_file_triggered()
 
 void Widget::on_actionsave_image_triggered()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "save Image", "", "PNG(*.png)");
+    ui->renderWidget->togglePause();
+
+    QString filter = "All Files (*);;JPG(*.jpg);;PNG(*.png)";
+    QString selectedFilter;
+
+    QString fileName = QFileDialog::getSaveFileName(this, "save Image", "", filter, &selectedFilter, // 传入地址，QFileDialog 会填充用户选择的过滤器字符串
+                                                    QFileDialog::DontUseNativeDialog );
     if(!fileName.isEmpty()){
+        QFileInfo fileInfo(fileName);
+        QString suffix;
+        if (selectedFilter.contains("*.png", Qt::CaseInsensitive)) {
+            suffix = ".png";
+        } else if (selectedFilter.contains("*.jpg", Qt::CaseInsensitive) || selectedFilter.contains("*.jpeg", Qt::CaseInsensitive)) {
+            suffix = ".jpg"; // 统一使用 .jpg
+        } else if (selectedFilter.contains("*.bmp", Qt::CaseInsensitive)) {
+            suffix = ".bmp";
+        }
+        if (fileInfo.suffix().isEmpty() && !suffix.isEmpty()) {
+            fileName += suffix;
+        }
+
         ui->renderWidget->saveImage(fileName);
+        ui->renderWidget->togglePause();
     }
     else{
+        ui->renderWidget->togglePause();
         return;
     }
 }

@@ -178,6 +178,7 @@ SRendererDevice::SRendererDevice(int wide, int height)
     ,m_rendererMode(RendererMode::Mesh)
     ,m_faceCulling(true)
     ,m_multiThread(true)
+    ,m_tbbThread(false)
     ,m_simd(true)
 {
     { // 设置视景体为重心在 (0,0,0) 的 1*1*1立方体
@@ -224,6 +225,7 @@ QImage& SRendererDevice::getBuffer() // 返回当前帧缓冲内的快照Colorbu
 
 bool SRendererDevice::saveImage(QString path) // 将当前帧缓冲的快照保存到对应路径
 {
+    std::cout << "it is  SRendererDevice::saveImage" << std::endl;
     return m_frameBuffer.saveImage(path);
 }
 
@@ -240,7 +242,7 @@ void SRendererDevice::render() // 渲染入口
 
     // 多线程加速入口
     if(m_multiThread){
-        // 将模型进行分块加载
+        //将模型进行分块加载
         const int threadCount = m_threadPool->getThreadNum(); // 得到最大线程数量
         const int chunkSize = triangleList.size() / threadCount; //得到块的大小
         std::vector<std::future<void>> futures;
@@ -258,6 +260,13 @@ void SRendererDevice::render() // 渲染入口
         for(auto& future : futures){
             future.get();
         }
+
+        // tbb::parallel_for(tbb::blocked_range<size_t>(0, triangleList.size()),
+        //                   [&](tbb::blocked_range<size_t> r)
+        //                   {
+        //                       for(size_t i = r.begin(); i < r.end(); i++)
+        //                           processTriangle(triangleList[i]);
+        //                   });
     }
     else // 非多线程入口
     {
@@ -305,8 +314,7 @@ void SRendererDevice::processTriangle(Triangle& tri) // 处理传入的三角形
                 pointTriangle(ctri);
             }
         }
-    }
-    else{
+    }else{
         executePerspectiveDivision(tri); // 透视除法
         convertToScreen(tri); // 转换为屏幕坐标
         if(m_rendererMode == RendererMode::Rasterization) // 应用光栅化
@@ -331,56 +339,53 @@ void SRendererDevice::rasterizationTriangle(Triangle& tri) // 光栅化三角形
     {
         return;
     }
-    else if(triEdge.m_twoArea == 0) // 若三角形为一条线直接返回
+    if(triEdge.m_twoArea == 0) // 若三角形为一条线直接返回
     {
         return;
     }
 
-    if(m_simd){
-        rasterizationTriangleSimd(tri);
-    }
-    else{
-        CoordI4D boundingBox = getBoundingBox(tri); // 求三角形的包围盒
-        int xMin = std::max(0, boundingBox[0]);
-        int yMin = std::max(0, boundingBox[1]);
-        int xMax = std::min(m_wide - 1, boundingBox[2]);
-        int yMax = std::min(m_height - 1, boundingBox[3]);
+    // SIMD分支
+    if(m_simd){rasterizationTriangleSimd(tri); return;}
 
-        Fragment frag; // 是否进入三角形的标志
-        bool flag = false;
-        VectorI3D cy = triEdge.getResult(xMin, yMin); // 得到(xMin,yMin)即包围盒左上方顶点的对于三角形的边缘方程初始值
+    CoordI4D boundingBox = getBoundingBox(tri); // 求三角形的包围盒
+    int xMin = std::max(0, boundingBox[0]);
+    int yMin = std::max(0, boundingBox[1]);
+    int xMax = std::min(m_wide - 1, boundingBox[2]);
+    int yMax = std::min(m_height - 1, boundingBox[3]);
 
-        #pragma omp parallel for default(none)\shared(tri, triEdge, xMin, xMax, yMin, yMax, m_frameBuffer, m_shader, m_antiAliasing) \ private(y) \ firstprivate(triEdge)
-        for(int y = yMin; y <= yMax; y++) // 向屏幕下方开始遍历
-        {
-            flag = false;
-            VectorI3D cx = cy;
-            for(int x = xMin; x <= xMax; x++){
-                if(judgeInsideTriangle(triEdge, cx)) // 判断遍历的点是否在三角形内
+    Fragment frag;
+    bool flag = false;// 是否进入三角形的标志
+    VectorI3D cy = triEdge.getResult(xMin, yMin); // 得到(xMin,yMin)即包围盒左上方顶点的对于三角形的边缘方程初始值
+    for(int y = yMin; y <= yMax; y++) // 向屏幕下方开始遍历
+    {
+        flag = false;
+        VectorI3D cx = cy;
+        for(int x = xMin; x <= xMax; x++){
+            // 判断遍历的点是否在三角形内
+            if(judgeInsideTriangle(triEdge, cx)){
+                flag = true; // 进入三角形后置 1
+                Vector3D bartcenTri = triEdge.getBarycentric(cx); // 得到该点的重心坐标用于插值
+                float screenDepth = calculateInterpolation<float>(tri[0].screenDepth, tri[1].screenDepth, tri[2].screenDepth, bartcenTri); // 对深度进行插值
+
+                if(m_frameBuffer.judgeDepth(x, y, screenDepth)) // 对该点进行深度测试，若成功更新深度则绘制该点
                 {
-                    flag = true; // 进入三角形后置 1
-                    Vector3D bartcenTri = triEdge.getBarycentric(cx); // 得到该点的重心坐标用于插值
-                    float screenDepth = calculateInterpolation<float>(tri[0].screenDepth,
-                                                                      tri[1].screenDepth,
-                                                                      tri[2].screenDepth,
-                                                                      bartcenTri); // 对深度进行插值
+                    float bartcen1 = bartcenTri.x / tri[0].ndcSpacePos.w;
+                    float bartcen2 = bartcenTri.y / tri[1].ndcSpacePos.w;
+                    float bartcen3 = bartcenTri.z / tri[2].ndcSpacePos.w;
+                    float bartcen = bartcen1 + bartcen2 + bartcen3;
 
-                    if(m_frameBuffer.judgeDepth(x, y, screenDepth)) // 对该点进行深度测试，若成功更新深度则绘制该点
-                    {
-                        // 先计算深度插值
-                        float viewDepth = 1.f / (bartcenTri.x / tri[0].ndcSpacePos.w + bartcenTri.y / tri[1].ndcSpacePos.w + bartcenTri.z / tri[2].ndcSpacePos.w);
-                        frag = constructFragment(x, y, screenDepth, viewDepth, tri, bartcenTri); // 构造着色点
-                        m_shader->fragmentShader(frag); // 应用片着色
-                         m_frameBuffer.setPixel(frag.screenPos.x, frag.screenPos.y, frag.fragmentColor);
-                    }
+                    float viewDepth = 1.f / bartcen;// 计算深度插值
+                    frag = constructFragment(x, y, screenDepth, viewDepth, tri, bartcenTri); // 构造着色点
+                    m_shader->fragmentShader(frag); // 应用片着色
+                    m_frameBuffer.setPixel(frag.screenPos.x, frag.screenPos.y, frag.fragmentColor);
                 }
-                else if(flag){
-                    break; // 离开三角形，换行
-                }
-                triEdge.upX(cx); // X自增，边缘方程自增一定值
             }
-            triEdge.upY(cy);  // Y自增，边缘方程自增一定值
+            else if(flag){
+                break; // 离开三角形，换行
+            }
+            triEdge.upX(cx); // X自增，边缘方程自增一定值
         }
+        triEdge.upY(cy);  // Y自增，边缘方程自增一定值
     }
 }
 

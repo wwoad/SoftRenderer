@@ -107,6 +107,7 @@ void RenderWidget::showFPS(qint64 &elapsed)
 
 void RenderWidget::saveImage(QString path)
 {
+     std::cout << "it is  RenderWidget::saveImage" << std::endl;
     SRendererDevice::getInstance().saveImage(path);
 }
 
