@@ -1,0 +1,34 @@
+newmtl african_head_material
+# 环境光反射（Ambient color） - 通常设为0或非常小的值
+Ka 0.000000 0.000000 0.000000
+# 漫反射颜色（Diffuse color） - 当没有漫反射贴图时使用，或者作为贴图颜色的倍增
+Kd 1.000000 1.000000 1.000000
+# 镜面反射颜色（Specular color） - 当没有镜面反射贴图时使用
+Ks 0.500000 0.500000 0.500000
+# 透明度/不透明度（Transparency/Dissolve）
+d 1.000000
+# 光照模型（Illumination model）
+# 2 = Highlight on (最常用，支持漫反射和镜面高光)
+illum 2
+# 镜面高光值（Specular exponent） - 越大越亮、越小越模糊
+Ns 32.000000
+
+# 漫反射贴图（Diffuse map）
+map_Kd african_head_diffuse.png
+
+# 法线贴图（Normal map / Bump map）
+# 优先使用 _nm_tangent.png，因为它通常是更准确的切线空间法线贴图。
+# -bm 1 是 bump 关键字的默认强度，可以省略，但明确写出也无妨。
+bump african_head_nm_tangent.png
+# 如果 african_head_nm.png 是不同的法线贴图类型（例如对象空间），
+# 或者在某种情况下需要它而不是切线空间法线，你可以将其作为替代或补充。
+# 但通常一个模型只需要一个法线贴图。
+
+# 镜面反射贴图（Specular map）
+map_Ks african_head_spec.png
+
+# 注意：
+# african_head_nm.png 文件在大多数情况下不会同时使用，除非它有特定用途，
+# 例如它是不同类型的法线贴图 (如对象空间法线) 或是一个高度图 (disp)。
+# 在此标准MTL中，我们只包含最常用且必要的贴图。
+
