@@ -108,7 +108,7 @@ CMakeLists.txt.user*
 *.lai
 *.la
 *.a
-#*.lib
+*.lib
 
 # Executables
 *.exe
