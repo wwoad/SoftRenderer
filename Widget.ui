@@ -721,7 +721,17 @@
     <property name="title">
      <string>Setting</string>
     </property>
-    <addaction name="actionMultithread"/>
+    <widget class="QMenu" name="menuMultiThread">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>ThreadMode</string>
+     </property>
+     <addaction name="actionMultiThread"/>
+     <addaction name="actionTbbMultiThread"/>
+    </widget>
+    <addaction name="menuMultiThread"/>
     <addaction name="actionFaceCulling"/>
     <addaction name="actionSIMD"/>
     <addaction name="actionTexture"/>
@@ -743,14 +753,6 @@
   <action name="actionexit">
    <property name="text">
     <string>Exit</string>
-   </property>
-  </action>
-  <action name="actionMultithread">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>MultiThread</string>
    </property>
   </action>
   <action name="actionFaceCulling">
@@ -778,6 +780,22 @@
    </property>
    <property name="text">
     <string>Texture</string>
+   </property>
+  </action>
+  <action name="actionMultiThread">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>MultiThread</string>
+   </property>
+  </action>
+  <action name="actionTbbMultiThread">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>TbbMultiThread</string>
    </property>
   </action>
  </widget>

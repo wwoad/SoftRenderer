@@ -21,7 +21,7 @@ Widget::~Widget()
 void Widget::setOption(Option option, bool val)
 {
     if(option == Option::MUTITHREAD){
-        ui->actionMultithread->setChecked(val);
+        ui->actionMultiThread->setChecked(val);
         ui->renderWidget->setMultiThread(val);
     }
     else if(option == Option::FACECULLING){
@@ -210,13 +210,27 @@ void Widget::on_Yawdial_valueChanged(int value)
     setLightDir();
 }
 
-void Widget::on_actionMultithread_triggered()
+void Widget::on_actionMultiThread_triggered()
 {
-    if(ui->actionMultithread->isChecked()){
+    ui->actionTbbMultiThread->setChecked(false);
+    if(ui->actionMultiThread->isChecked()){
+        ui->renderWidget->setTBBMultiThread(false);
         ui->renderWidget->setMultiThread(true);
     }
     else{
         ui->renderWidget->setMultiThread(false);
+    }
+}
+
+void Widget::on_actionTbbMultiThread_triggered()
+{
+    ui->actionMultiThread->setChecked(false);
+    if(ui->actionTbbMultiThread->isChecked()){
+        ui->renderWidget->setMultiThread(false);
+        ui->renderWidget->setTBBMultiThread(true);
+    }
+    else{
+        ui->renderWidget->setTBBMultiThread(false);
     }
 }
 
@@ -250,4 +264,3 @@ void Widget::on_actionTexture_triggered()
         SHADERTEXTURE = false;
     }
 }
-

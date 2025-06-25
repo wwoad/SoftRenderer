@@ -52,7 +52,9 @@ private slots:
 
     void on_VertexCheckBox_checkStateChanged(const Qt::CheckState &arg1);
 
-    void on_actionMultithread_triggered();
+    void on_actionMultiThread_triggered();
+
+    void on_actionTbbMultiThread_triggered();
 
     void on_actionFaceCulling_triggered();
 

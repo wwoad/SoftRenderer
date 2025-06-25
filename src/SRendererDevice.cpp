@@ -241,32 +241,34 @@ void SRendererDevice::render() // 渲染入口
     }
 
     // 多线程加速入口
-    if(m_multiThread){
-        //将模型进行分块加载
-        const int threadCount = m_threadPool->getThreadNum(); // 得到最大线程数量
-        const int chunkSize = triangleList.size() / threadCount; //得到块的大小
-        std::vector<std::future<void>> futures;
-        futures.reserve(threadCount);
+    if(m_multiThread || m_tbbThread){
+        if(m_multiThread){
+            //将模型进行分块加载
+            const int threadCount = m_threadPool->getThreadNum(); // 得到最大线程数量
+            const int chunkSize = triangleList.size() / threadCount; //得到块的大小
+            std::vector<std::future<void>> futures;
+            futures.reserve(threadCount);
 
-        for(int t = 0; t < threadCount; t++){
-            int start = t * chunkSize;
-            int end = (t == threadCount - 1) ? (triangleList.size()) : (start + chunkSize);
-            futures.push_back(m_threadPool->addTask([this, start, end, &triangleList](){
-                for(int i = start; i < end; i++){
-                    this->processTriangle(triangleList[i]);
-                }
-            }));
+            for(int t = 0; t < threadCount; t++){
+                int start = t * chunkSize;
+                int end = (t == threadCount - 1) ? (triangleList.size()) : (start + chunkSize);
+                futures.push_back(m_threadPool->addTask([this, start, end, &triangleList](){
+                    for(int i = start; i < end; i++){
+                        this->processTriangle(triangleList[i]);
+                    }
+                }));
+            }
+            for(auto& future : futures){
+                future.get();
+            }
+        }else if(m_tbbThread){
+            tbb::parallel_for(tbb::blocked_range<size_t>(0, triangleList.size()),
+                              [&](tbb::blocked_range<size_t> r)
+                              {
+                                  for(size_t i = r.begin(); i < r.end(); i++)
+                                      processTriangle(triangleList[i]);
+                              });
         }
-        for(auto& future : futures){
-            future.get();
-        }
-
-        // tbb::parallel_for(tbb::blocked_range<size_t>(0, triangleList.size()),
-        //                   [&](tbb::blocked_range<size_t> r)
-        //                   {
-        //                       for(size_t i = r.begin(); i < r.end(); i++)
-        //                           processTriangle(triangleList[i]);
-        //                   });
     }
     else // 非多线程入口
     {

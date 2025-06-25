@@ -73,6 +73,11 @@ void RenderWidget::setMultiThread(bool val)
     SRendererDevice::getInstance().m_multiThread = val;
 }
 
+void RenderWidget::setTBBMultiThread(bool val)
+{
+    SRendererDevice::getInstance().m_tbbThread = val;
+}
+
  void RenderWidget::setSIMD(bool val)
 {
     SRendererDevice::getInstance().m_simd = val;
