@@ -4,6 +4,8 @@
 
 bool SHADERTEXTURE = false;
 
+bool FXAA = false;
+
 Widget::Widget(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Widget)
@@ -264,3 +266,15 @@ void Widget::on_actionTexture_triggered()
         SHADERTEXTURE = false;
     }
 }
+
+
+void Widget::on_checkBox_checkStateChanged(const Qt::CheckState &arg1)
+{
+    if(ui->checkBox->isChecked()){
+        FXAA = true;
+    }else
+    {
+        FXAA =false;
+    }
+}
+

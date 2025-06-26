@@ -13,5 +13,5 @@ void Mesh::draw()
     SRendererDevice::getInstance().m_indices = m_indices;
     SRendererDevice::getInstance().m_shader->m_material.diffuse = m_diffuseTextureIndex;
     SRendererDevice::getInstance().m_shader->m_material.specular = m_specularTextureIndex;
-    SRendererDevice::getInstance().render();
+    SRendererDevice::getInstance().render();   
 }

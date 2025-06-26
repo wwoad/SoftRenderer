@@ -43,6 +43,7 @@ public:
     void setMultiThread(bool val);
     void setTBBMultiThread(bool val);
     void setSIMD(bool val);
+    void setFXAA(bool val);
     void saveImage(QString path);
     void loadmodel(QString path);
     void initDevice();

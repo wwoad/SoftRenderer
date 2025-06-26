@@ -83,6 +83,11 @@ void RenderWidget::setTBBMultiThread(bool val)
     SRendererDevice::getInstance().m_simd = val;
 }
 
+void RenderWidget::setFXAA(bool val)
+{
+    SRendererDevice::getInstance().m_useFXAA = val;
+}
+
 void RenderWidget::showFPS(qint64 &elapsed)
 {
     // int nowTime = QTime::currentTime().msecsSinceStartOfDay();

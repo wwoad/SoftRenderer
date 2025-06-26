@@ -21,6 +21,10 @@ set(tbb_PATH ${PROJECT_SOURCE_DIR}/dependences/tbb/include)
 set(LIBPATH ${PROJECT_SOURCE_DIR}/libs)
 set(SRCLIB SoftRendererCore)
 
+add_compile_options(-mavx -mfma)
+add_compile_options(-mavx2 -mfma)
+
+
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui)
 
@@ -49,7 +53,6 @@ link_directories(${PROJECT_SOURCE_DIR}/libs)
 qt_add_executable(SoftRenderer ${PROJECT_SOURCES}
 )
 
-target_compile_options(SoftRenderer PRIVATE -mavx)
 target_compile_options(SoftRenderer PRIVATE -Wno-changes-meaning)
 target_link_libraries(SoftRenderer PRIVATE assimp)
 target_link_libraries(SoftRenderer PRIVATE tbb)

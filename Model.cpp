@@ -59,6 +59,8 @@ void Model::draw()
     for(int i = 0; i < m_meshes.size(); i++){
         m_meshes[i].draw();
     }
+    // if(FXAA)
+    // SRendererDevice::getInstance().m_shader->FXAAShader(SRendererDevice::getInstance().getFrameBuffer().getImage(), 0.0833f, 0.75f, 0.0312f);
 }
 
 //====================================================================

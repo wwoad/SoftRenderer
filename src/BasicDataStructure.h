@@ -96,6 +96,11 @@ struct SimdVectorI3D
     __m256i x, y, z;
 };
 
+struct SimdVector2D
+{
+    __m256 x,y;
+};
+
 // 用于存储8个浮点向量 (例如，8个Vector3D) 的结构体
 struct SimdVector3D
 {
@@ -112,14 +117,17 @@ struct SimdFragment
     __m256i screenPosX, screenPosY;
     __m256  screenDepth;
     __m256  viewDepth; // 存储插值后的 1/w (用于透视校正)
-    SimdVector3D texCoord; // 存储插值后的 TexCoord/w
+    SimdVector2D texCoord; // 存储插值后的 TexCoord/w
     SimdVector3D normal;   // 存储插值后的 Normal/w
     SimdVector3D worldSpacePos; // 存储插值后的 WorldSpacePos/w
     SimdColor fragmentColor; // 由 SIMD 片元着色器计算
     // 构造函数或辅助函数用于填充
 };
 
-
-
+struct SimdMaterial {
+    __m256 shininess;
+    __m256i diffTextureIdx;
+    __m256i specTextureIdx;
+};
 
 #endif // BASICDATASTRUCTURE_H

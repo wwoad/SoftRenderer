@@ -9,8 +9,8 @@
 #include <optional>
 #include <immintrin.h>
 #include "tbb/parallel_for.h"
-#include "tbb/parallel_for_each.h"
 #include "tbb/blocked_range3d.h"
+#include "tbb/parallel_for_each.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "threadpool.h"
@@ -62,9 +62,10 @@ public:
     bool m_multiThread;
     bool m_tbbThread;
     bool m_simd;
+    bool m_useFXAA;
     std::vector<Vertex> m_vertexList; // 存储模型顶点
     std::vector<unsigned> m_indices;  // 存储模型顶点的绘制顺序
-    std::vector<Texture> m_textureList; // 存储每一帧图片
+    std::vector<Texture> m_textureList; // 存储每
     std::unique_ptr<Shader> m_shader;  // 着色方式
     Color m_clearColor;
     Color m_pointColor;
@@ -78,6 +79,7 @@ public:
     void render();
     static void init(int& wide, int& height);
     static SRendererDevice& getInstance(int wide = 0, int height = 0); // 获取简单的实例，用于外部调用
+    SRFrameBuffer& getFrameBuffer();
 
     //ban
     SRendererDevice(const SRendererDevice&) = delete;
@@ -104,7 +106,7 @@ private:
     CoordI4D getBoundingBox(Triangle& tri); //算出三角形包围盒
     std::vector<Triangle> clipTriangle(Triangle& tri); // 剪裁三角形
     std::optional<Line> clipLine(Line& line); //剪裁线
-    // Color antiAliasing(CoordI2D &coord);
+    void extractFragmentData();
 
     //SIMD
     void rasterizationTriangleSimd(Triangle& tri);

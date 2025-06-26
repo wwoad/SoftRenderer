@@ -37,7 +37,6 @@ public:
 private slots:
     void on_actionopen_file_triggered();
 
-    // void on_actionsave_image_triggered();
     void on_actionsave_image_triggered();
 
     void on_MeshcheckBox_checkStateChanged(const Qt::CheckState &arg1);
@@ -63,6 +62,8 @@ private slots:
     void on_actionSIMD_triggered();
 
     void on_actionTexture_triggered();
+
+    void on_checkBox_checkStateChanged(const Qt::CheckState &arg1);
 
 private:
     Ui::Widget *ui;

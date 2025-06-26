@@ -7,6 +7,8 @@
 #include "BasicDataStructure.h"
 
 
+extern bool FXAA;
+
 class Mesh
 {
 public:

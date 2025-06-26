@@ -41,7 +41,7 @@
      <bool>false</bool>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Tab1">
      <property name="enabled">
@@ -551,6 +551,19 @@
         <string>VertexNumber : </string>
        </property>
       </widget>
+     </widget>
+     <widget class="QCheckBox" name="checkBox">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>420</y>
+        <width>96</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>CheckBox</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="Tab3">
