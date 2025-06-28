@@ -321,8 +321,8 @@ void SRendererDevice::processTriangle(Triangle& tri) // 处理传入的三角形
             {
                 pointTriangle(ctri);
             }
-            return;
         }
+        return;
     }
     executePerspectiveDivision(tri); // 透视除法
     convertToScreen(tri); // 转换为屏幕坐标

@@ -6,7 +6,7 @@
 #include <QMainWindow>
 #include "RenderWidget.h"
 
-const int WIDGETWIDTH = 1155;
+const int WIDGETWIDTH = 1000;
 const int WIDGETHEIGHT = 650;
 
 

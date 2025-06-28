@@ -45,11 +45,11 @@ void Widget::setOption(Option option, bool val)
 void Widget::setCameraPara(CameraPara para, float val)
 {
     if(para == CameraPara::FOV){
-        ui->Fovlabel_val->setText(QString::number(static_cast<int>(val)));
+        ui->Fovlabel->setText(QString::number(static_cast<int>(val)));
         ui->renderWidget->m_camera.m_fov = val;
     }
     else if(para == CameraPara::NEAR){
-        ui->Nearlabel_val->setText(QString::number((static_cast<int>(val))));
+        ui->Nearlabel->setText(QString::number((static_cast<int>(val))));
         ui->renderWidget->m_camera.m_zNear = val;
     }
     else{
