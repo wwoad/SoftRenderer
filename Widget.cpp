@@ -3,6 +3,9 @@
 #include "ui_Widget.h"
 
 bool SHADERTEXTURE = false;
+bool AMBIENT = false;
+bool DIFFUSE = false;
+bool SPECULAR = false;
 
 bool FXAA = false;
 
@@ -130,7 +133,7 @@ void Widget::on_actionopen_file_triggered()
 
 void Widget::on_actionsave_image_triggered()
 {
-    ui->renderWidget->togglePause();
+    // ui->renderWidget->togglePause();
 
     QString filter = "All Files (*);;JPG(*.jpg);;PNG(*.png)";
     QString selectedFilter;
@@ -155,7 +158,7 @@ void Widget::on_actionsave_image_triggered()
         ui->renderWidget->togglePause();
     }
     else{
-        ui->renderWidget->togglePause();
+        // ui->renderWidget->togglePause();
         return;
     }
 }
@@ -256,7 +259,6 @@ void Widget::on_actionSIMD_triggered()
     }
 }
 
-
 void Widget::on_actionTexture_triggered()
 {
     if(ui->actionTexture->isChecked()){
@@ -268,13 +270,14 @@ void Widget::on_actionTexture_triggered()
 }
 
 
+
 void Widget::on_checkBox_checkStateChanged(const Qt::CheckState &arg1)
 {
     if(ui->checkBox->isChecked()){
-        FXAA = true;
-    }else
-    {
-        FXAA =false;
+        ui->renderWidget->togglePause();
+    }else{
+        ui->renderWidget->togglePause();
     }
 }
+
 

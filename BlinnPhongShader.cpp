@@ -148,6 +148,9 @@ void BlinnPhongShader::fragmentShader(Fragment& fragment)
         Color diffuse  = light.diffuse * std::max(glm::dot(normal, lightDir), 0.f) * diffuseColor;
         Color specular = light.specular * std::pow(std::max(glm::dot(normal, glm::normalize(viewDir + lightDir)), 0.f), m_material.shininess) * specularColor;
 
+        if(AMBIENT){return (ambient);}
+        if(DIFFUSE){return (diffuse);}
+        if(SPECULAR){return (specular);}
         return (ambient + diffuse + specular);
     };
 
@@ -250,7 +253,7 @@ void BlinnPhongShader::fragmentShaderSIMD(SimdFragment& frag_simd, __m256& final
 
         simdResult = simd_add_ps(simdResult, ambient);
         simdResult = simd_add_ps(simdResult, diffuse);
-        simdResult = simd_add_ps(simdResult, specular);
+        // simdResult = simd_add_ps(simdResult, specular);
     }
     frag_simd.fragmentColor = simdResult;
 }

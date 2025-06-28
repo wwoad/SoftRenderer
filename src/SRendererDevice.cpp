@@ -674,65 +674,65 @@ void SRendererDevice::rasterizationTriangleSimd(Triangle& tri)
             // 检查是否有任何像素通过了所有测试
             int maskInt = _mm256_movemask_ps(finalMask);
             if(maskInt != 0){
-                m_shader->fragmentShaderSIMD(simdFragment, finalMask);
-                m_frameBuffer.setPixelSIMD(simdX, simdY, simdFragment.fragmentColor, finalMask);
+                // m_shader->fragmentShaderSIMD(simdFragment, finalMask);
+                // m_frameBuffer.setPixelSIMD(simdX, simdY, simdFragment.fragmentColor, finalMask);
 
-                // // === Fallback 到非 SIMD 片元着色和像素写入 ===
-                // //  提取所有 SIMD 向量数据到数组
-                // int screenPosXArr[8], screenPosYArr[8];
-                // float screenDepth_arr[8];
-                // float w_reciprocal_arr[8];
-                // float texCoord_div_w_x_arr[8], texCoord_div_w_y_arr[8], texCoord_div_w_z_arr[8];
-                // float normal_div_w_x_arr[8], normal_div_w_y_arr[8], normal_div_w_z_arr[8];
-                // float worldSpacePos_div_w_x_arr[8], worldSpacePos_div_w_y_arr[8], worldSpacePos_div_w_z_arr[8];
-                // // ** 替换 _mm256_storeu_epi32 的部分：手动提取整型元素 **
-                // __m128i screenPosX_low = _mm256_extractf128_si256(simdFragment.screenPosX, 0); // 提取低 128 位 (前4个元素)
-                // __m128i screenPosX_high = _mm256_extractf128_si256(simdFragment.screenPosX, 1); // 提取高 128 位 (后4个元素)
-                // __m128i screenPosY_low = _mm256_extractf128_si256(simdFragment.screenPosY, 0); // 提取低 128 位
-                // __m128i screenPosY_high = _mm256_extractf128_si256(simdFragment.screenPosY, 1); // 提取高 128 位
-                // for(int i = 0; i < 4; ++i) {
-                //     screenPosXArr[i] = _mm_extract_epi32(screenPosX_low, i); // 从 128 位向量中提取 32 位整数
-                //     screenPosYArr[i] = _mm_extract_epi32(screenPosY_low, i);
-                // }
-                // for(int i = 0; i < 4; ++i) {
-                //     screenPosXArr[i + 4] = _mm_extract_epi32(screenPosX_high, i); // 从 128 位向量中提取 32 位整数
-                //     screenPosYArr[i + 4] = _mm_extract_epi32(screenPosY_high, i);
-                // }
-                // // ** 替换结束 **
-                // // ** 使用 _mm256_storeu_ps 提取浮点数据 ** (这部分没有报错，保留)
-                // _mm256_storeu_ps(screenDepth_arr, simdFragment.screenDepth);
-                // _mm256_storeu_ps(w_reciprocal_arr, simdFragment.viewDepth);
-                // _mm256_storeu_ps(texCoord_div_w_x_arr, simdFragment.texCoord.x);
-                // _mm256_storeu_ps(texCoord_div_w_y_arr, simdFragment.texCoord.y);
-                // _mm256_storeu_ps(normal_div_w_x_arr, simdFragment.normal.x);
-                // _mm256_storeu_ps(normal_div_w_y_arr, simdFragment.normal.y);
-                // _mm256_storeu_ps(normal_div_w_z_arr, simdFragment.normal.z);
-                // _mm256_storeu_ps(worldSpacePos_div_w_x_arr, simdFragment.worldSpacePos.x);
-                // _mm256_storeu_ps(worldSpacePos_div_w_y_arr, simdFragment.worldSpacePos.y);
-                // _mm256_storeu_ps(worldSpacePos_div_w_z_arr, simdFragment.worldSpacePos.z);
+                // === Fallback 到非 SIMD 片元着色和像素写入 ===
+                //  提取所有 SIMD 向量数据到数组
+                int screenPosXArr[8], screenPosYArr[8];
+                float screenDepth_arr[8];
+                float w_reciprocal_arr[8];
+                float texCoord_div_w_x_arr[8], texCoord_div_w_y_arr[8], texCoord_div_w_z_arr[8];
+                float normal_div_w_x_arr[8], normal_div_w_y_arr[8], normal_div_w_z_arr[8];
+                float worldSpacePos_div_w_x_arr[8], worldSpacePos_div_w_y_arr[8], worldSpacePos_div_w_z_arr[8];
+                // ** 替换 _mm256_storeu_epi32 的部分：手动提取整型元素 **
+                __m128i screenPosX_low = _mm256_extractf128_si256(simdFragment.screenPosX, 0); // 提取低 128 位 (前4个元素)
+                __m128i screenPosX_high = _mm256_extractf128_si256(simdFragment.screenPosX, 1); // 提取高 128 位 (后4个元素)
+                __m128i screenPosY_low = _mm256_extractf128_si256(simdFragment.screenPosY, 0); // 提取低 128 位
+                __m128i screenPosY_high = _mm256_extractf128_si256(simdFragment.screenPosY, 1); // 提取高 128 位
+                for(int i = 0; i < 4; ++i) {
+                    screenPosXArr[i] = _mm_extract_epi32(screenPosX_low, i); // 从 128 位向量中提取 32 位整数
+                    screenPosYArr[i] = _mm_extract_epi32(screenPosY_low, i);
+                }
+                for(int i = 0; i < 4; ++i) {
+                    screenPosXArr[i + 4] = _mm_extract_epi32(screenPosX_high, i); // 从 128 位向量中提取 32 位整数
+                    screenPosYArr[i + 4] = _mm_extract_epi32(screenPosY_high, i);
+                }
+                // ** 替换结束 **
+                // ** 使用 _mm256_storeu_ps 提取浮点数据 ** (这部分没有报错，保留)
+                _mm256_storeu_ps(screenDepth_arr, simdFragment.screenDepth);
+                _mm256_storeu_ps(w_reciprocal_arr, simdFragment.viewDepth);
+                _mm256_storeu_ps(texCoord_div_w_x_arr, simdFragment.texCoord.x);
+                _mm256_storeu_ps(texCoord_div_w_y_arr, simdFragment.texCoord.y);
+                _mm256_storeu_ps(normal_div_w_x_arr, simdFragment.normal.x);
+                _mm256_storeu_ps(normal_div_w_y_arr, simdFragment.normal.y);
+                _mm256_storeu_ps(normal_div_w_z_arr, simdFragment.normal.z);
+                _mm256_storeu_ps(worldSpacePos_div_w_x_arr, simdFragment.worldSpacePos.x);
+                _mm256_storeu_ps(worldSpacePos_div_w_y_arr, simdFragment.worldSpacePos.y);
+                _mm256_storeu_ps(worldSpacePos_div_w_z_arr, simdFragment.worldSpacePos.z);
 
-                // for (int i = 0; i < 8; ++i) {
-                //     if ((maskInt >> i) & 1) // 如果第i个像素通过所有测试
-                //     {
-                //         int current_x = screenPosXArr[i];
-                //         int current_y = screenPosYArr[i];
-                //         Fragment single_frag;
-                //         single_frag.screenPos = { current_x, current_y };
-                //         single_frag.screenDepth = screenDepth_arr[i];
-                //         // 应用透视校正： Attribute = ( 插值(Attribute/w) ) / ( 插值(1/w) )
-                //         float w_recip = w_reciprocal_arr[i]; // 插值后的 1/w
-                //         // 防止除以零
-                //         if (w_recip == 0.0f) continue;
-                //         single_frag.texCoord = { texCoord_div_w_x_arr[i] / w_recip, texCoord_div_w_y_arr[i] / w_recip }; // Assuming Coord2D has 2 components
-                //         single_frag.normal = { normal_div_w_x_arr[i] / w_recip, normal_div_w_y_arr[i] / w_recip, normal_div_w_z_arr[i] / w_recip };
-                //         single_frag.worldSpacePos = { worldSpacePos_div_w_x_arr[i] / w_recip, worldSpacePos_div_w_y_arr[i] / w_recip, worldSpacePos_div_w_z_arr[i] / w_recip };
-                //         // 调用非 SIMD 片元着色器
-                //         m_shader->fragmentShader(single_frag);
-                //         // 逐个设置像素
-                //         m_frameBuffer.setPixel(single_frag.screenPos.x, single_frag.screenPos.y, single_frag.fragmentColor);
+                for (int i = 0; i < 8; ++i) {
+                    if ((maskInt >> i) & 1) // 如果第i个像素通过所有测试
+                    {
+                        int current_x = screenPosXArr[i];
+                        int current_y = screenPosYArr[i];
+                        Fragment single_frag;
+                        single_frag.screenPos = { current_x, current_y };
+                        single_frag.screenDepth = screenDepth_arr[i];
+                        // 应用透视校正： Attribute = ( 插值(Attribute/w) ) / ( 插值(1/w) )
+                        float w_recip = w_reciprocal_arr[i]; // 插值后的 1/w
+                        // 防止除以零
+                        if (w_recip == 0.0f) continue;
+                        single_frag.texCoord = { texCoord_div_w_x_arr[i] / w_recip, texCoord_div_w_y_arr[i] / w_recip }; // Assuming Coord2D has 2 components
+                        single_frag.normal = { normal_div_w_x_arr[i] / w_recip, normal_div_w_y_arr[i] / w_recip, normal_div_w_z_arr[i] / w_recip };
+                        single_frag.worldSpacePos = { worldSpacePos_div_w_x_arr[i] / w_recip, worldSpacePos_div_w_y_arr[i] / w_recip, worldSpacePos_div_w_z_arr[i] / w_recip };
+                        // 调用非 SIMD 片元着色器
+                        m_shader->fragmentShader(single_frag);
+                        // 逐个设置像素
+                        m_frameBuffer.setPixel(single_frag.screenPos.x, single_frag.screenPos.y, single_frag.fragmentColor);
 
-                //     }
-                // }
+                    }
+                }
             }
         }
     }

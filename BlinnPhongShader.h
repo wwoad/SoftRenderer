@@ -6,7 +6,9 @@
 #include "Texture.h"
 
 extern bool SHADERTEXTURE;
-
+extern bool AMBIENT;
+extern bool DIFFUSE;
+extern bool SPECULAR;
 class BlinnPhongShader : public Shader
 {
 public:
