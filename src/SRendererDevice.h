@@ -8,13 +8,22 @@
 #include <atomic>
 #include <optional>
 #include <immintrin.h>
+<<<<<<< HEAD
+=======
+#include "tbb/parallel_for.h"
+#include "tbb/blocked_range3d.h"
+#include "tbb/parallel_for_each.h"
+>>>>>>> future
 #include "Shader.h"
 #include "Texture.h"
 #include "threadpool.h"
 #include "SRFrameBuffer.h"
 #include "BasicDataStructure.h"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> future
 struct EdgeEquation //三角形(中某点)对应的边缘方程
 {
     VectorI3D m_i; // x方向上每移动一个单位距离，边界函数的增量
@@ -51,6 +60,7 @@ struct EdgeEquationSimd
 
 class Shader;
 
+<<<<<<< HEAD
 
 class SRendererDevice
 {
@@ -62,6 +72,21 @@ public:
     std::vector<Vertex> m_vertexList; // 存储模型顶点
     std::vector<unsigned> m_indices;  // 存储模型顶点的绘制顺序
     std::vector<Texture> m_textureList; // 存储每一帧图片
+=======
+class SRendererDevice
+{
+public:
+
+    RendererMode m_rendererMode;
+    bool m_faceCulling;
+    bool m_multiThread;
+    bool m_tbbThread;
+    bool m_simd;
+    bool m_useFXAA;
+    std::vector<Vertex> m_vertexList; // 存储模型顶点
+    std::vector<unsigned> m_indices;  // 存储模型顶点的绘制顺序
+    std::vector<Texture> m_textureList; // 存储每
+>>>>>>> future
     std::unique_ptr<Shader> m_shader;  // 着色方式
     Color m_clearColor;
     Color m_pointColor;
@@ -75,6 +100,10 @@ public:
     void render();
     static void init(int& wide, int& height);
     static SRendererDevice& getInstance(int wide = 0, int height = 0); // 获取简单的实例，用于外部调用
+<<<<<<< HEAD
+=======
+    SRFrameBuffer& getFrameBuffer();
+>>>>>>> future
 
     //ban
     SRendererDevice(const SRendererDevice&) = delete;
@@ -101,7 +130,11 @@ private:
     CoordI4D getBoundingBox(Triangle& tri); //算出三角形包围盒
     std::vector<Triangle> clipTriangle(Triangle& tri); // 剪裁三角形
     std::optional<Line> clipLine(Line& line); //剪裁线
+<<<<<<< HEAD
     // Color antiAliasing(CoordI2D &coord);
+=======
+    void extractFragmentData();
+>>>>>>> future
 
     //SIMD
     void rasterizationTriangleSimd(Triangle& tri);

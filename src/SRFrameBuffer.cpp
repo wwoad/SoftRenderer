@@ -29,6 +29,10 @@ void SRFrameBuffer::setPixel(int x, int y, const Color& color) //着色像素点
 
 bool SRFrameBuffer::saveImage(QString filePath)
 {
+<<<<<<< HEAD
+=======
+     std::cout << "it is  SRFrameBuffer::saveImage" << std::endl;
+>>>>>>> future
     return m_colorBuffer.save(filePath);
 }
 
@@ -58,8 +62,12 @@ int SRFrameBuffer::getHeight()
     return m_height;
 }
 
+<<<<<<< HEAD
 
 __m256 SRFrameBuffer::judgeDepthSimd(const __m256& inside_mask_ps, const __m256i& x_simd, const __m256i& y_simd, const __m256& z_simd)
+=======
+__m256 SRFrameBuffer::judgeDepthSimd(const __m256& insideMask, const __m256i& x_simd, const __m256i& y_simd, const __m256& z_simd)
+>>>>>>> future
 {
 
     // __m256 epsilon = _mm256_set1_ps(1e-4f);
@@ -101,7 +109,11 @@ __m256 SRFrameBuffer::judgeDepthSimd(const __m256& inside_mask_ps, const __m256i
     int temp_depth_mask_int = 0; // 存储8个像素的深度测试结果位掩码
     for (int i = 0; i < 8; ++i) {
         // 只有在三角形内部的像素才进行深度测试
+<<<<<<< HEAD
         if (((_mm256_movemask_ps(inside_mask_ps) >> i) & 1)) {
+=======
+        if (((_mm256_movemask_ps(insideMask) >> i) & 1)) {
+>>>>>>> future
             int current_x = _mm256_extract_epi32(x_simd, i); // 获取单个像素的x
             int current_y = _mm256_extract_epi32(y_simd, i); // 获取单个像素的y
             float current_z = temp_screenDepth_arr[i]; // 获取单个像素的插值深度
@@ -128,6 +140,7 @@ __m256 SRFrameBuffer::judgeDepthSimd(const __m256& inside_mask_ps, const __m256i
     return _mm256_castsi256_ps(temp_depth_mask_simd_i);
 }
 
+<<<<<<< HEAD
 void SRFrameBuffer::setPixelSimd(const __m256& mask_simd, const __m256i& x_simd, const __m256i& y_simd, const SimdColor& colors_simd) // colors_simd现在使用SimdVector3D
 {
 
@@ -144,3 +157,65 @@ void SRFrameBuffer::updateDepthSimd(const __m256& mask_ps, const __m256i& x_simd
     __m256i indices_to_update_simd = _mm256_add_epi32(_mm256_mullo_epi32(clamped_y_simd, wide_simd_local), clamped_x_simd);
     _mm256_maskstore_ps(m_depthBuffer.data(), indices_to_update_simd, z_simd);
 }
+=======
+void SRFrameBuffer::setPixelSIMD(const __m256i& simdX, const __m256i& simdY, const SimdColor& simdColors, __m256& simdMask) // colors_simd现在使用SimdVector3D
+{
+    __m256i simdHeight = _mm256_set1_epi32(m_height);
+    __m256i oneI = _mm256_set1_epi32(1);
+    __m256i simdFlippedY = _mm256_sub_epi32(_mm256_sub_epi32(simdHeight, oneI), simdY);
+
+    __m256 float255 = _mm256_set1_ps(255.f);
+    __m256i simdRed = _mm256_cvttps_epi32(_mm256_mul_ps(simdColors.r, float255));
+    __m256i simdGreeen = _mm256_cvttps_epi32(_mm256_mul_ps(simdColors.g, float255));
+    __m256i simdBlue = _mm256_cvttps_epi32(_mm256_mul_ps(simdColors.b, float255));
+
+    __m256i simdZero = _mm256_setzero_si256();
+    __m256i simd255 = _mm256_set1_epi32(255);
+    simdRed = _mm256_min_epi32(_mm256_max_epi32(simdRed, simdZero), simd255);
+    simdGreeen = _mm256_min_epi32(_mm256_max_epi32(simdGreeen, simdZero), simd255);
+    simdBlue = _mm256_min_epi32(_mm256_max_epi32(simdBlue, simdZero), simd255);
+
+    __m256i simdPixelArgb;
+    simdPixelArgb = _mm256_or_si256(simdRed, _mm256_slli_epi32(simdGreeen, 8));
+    simdPixelArgb = _mm256_or_si256(simdPixelArgb, _mm256_slli_epi32(simdBlue, 16));
+
+    const uchar* scan0 = m_colorBuffer.bits();
+    int bytesPerLine = m_colorBuffer.bytesPerLine();
+    int bytesPerPixel = 4;
+
+    __m256i simdBytPerLine = _mm256_set1_epi32(bytesPerLine);
+    __m256i simdBytPerPixel = _mm256_set1_epi32(bytesPerPixel);
+
+    __m256i addressesOfset = _mm256_add_epi32(_mm256_mullo_epi32(simdFlippedY, simdBytPerLine), _mm256_mullo_epi32(simdX, simdBytPerPixel));
+    __m256i baseAddress = _mm256_set1_epi32(reinterpret_cast<qintptr>(scan0));
+    __m256i absoluteAddresses = _mm256_add_epi32(baseAddress, addressesOfset);
+
+    __m256i pixelIndices = _mm256_srli_epi32(addressesOfset, 2);
+    const int* baseIntPtr = reinterpret_cast<const int*>(scan0);
+    __m256i existingPixel = _mm256_i32gather_epi32(baseIntPtr, pixelIndices, 4);
+    __m256 simdMaskF = simdMask;
+    __m256i simdMaskI = _mm256_castps_si256(simdMaskF);
+    __m256i blendedPixel = _mm256_blendv_epi8(existingPixel, simdPixelArgb, simdMaskI);
+
+    int xArr[8];
+    int yFlippedArr[8];
+    _mm256_storeu_si256((__m256i*)xArr, simdX);
+    _mm256_storeu_si256((__m256i*)yFlippedArr, simdFlippedY);
+    int blendedPixelArr[8];
+    _mm256_storeu_si256((__m256i*)blendedPixelArr, blendedPixel);
+
+    int mask = _mm256_movemask_ps(simdMask);
+    for(int i = 0; i < 8; i++){
+        if((mask >> i) & 1){
+            QRgb pixelVal = blendedPixelArr[i];
+            QColor pixelColor;
+            pixelColor.setRgb((pixelVal >> 0) & 0xFF,
+                              (pixelVal >> 8) & 0xFF,
+                              (pixelVal >> 16) & 0xFF);
+
+            m_colorBuffer.setPixelColor(xArr[i], yFlippedArr[i], pixelColor);
+        }
+    }
+}
+
+>>>>>>> future

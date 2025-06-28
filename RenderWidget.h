@@ -41,7 +41,13 @@ public:
     void setRenderMode(RendererMode mode);
     void setFaceCulling(bool val);
     void setMultiThread(bool val);
+<<<<<<< HEAD
     void setSIMD(bool val);
+=======
+    void setTBBMultiThread(bool val);
+    void setSIMD(bool val);
+    void setFXAA(bool val);
+>>>>>>> future
     void saveImage(QString path);
     void loadmodel(QString path);
     void initDevice();

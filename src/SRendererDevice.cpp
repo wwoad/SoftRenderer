@@ -159,9 +159,15 @@ __m256i EdgeEquationSimd::judgeInsideTriangleSimd(const SimdVectorI3D& edge_valu
     // (NOT exclude_mask) 等价于 all_ones XOR exclude_mask
     __m256i all_ones = _mm256_set1_epi32(0xFFFFFFFF);
     __m256i not_exclude_mask = _mm256_xor_si256(exclude_mask, all_ones);
+<<<<<<< HEAD
     __m256i final_inside_mask_simd = _mm256_and_si256(inside_base_mask, not_exclude_mask);
 
     return final_inside_mask_simd;
+=======
+    __m256i final_simdInsideMask = _mm256_and_si256(inside_base_mask, not_exclude_mask);
+
+    return final_simdInsideMask;
+>>>>>>> future
 }
 
 //--------------------------------------------------------------
@@ -178,7 +184,13 @@ SRendererDevice::SRendererDevice(int wide, int height)
     ,m_rendererMode(RendererMode::Mesh)
     ,m_faceCulling(true)
     ,m_multiThread(true)
+<<<<<<< HEAD
     ,m_simd(true)
+=======
+    ,m_tbbThread(false)
+    ,m_simd(true)
+    ,m_useFXAA(true)
+>>>>>>> future
 {
     { // 设置视景体为重心在 (0,0,0) 的 1*1*1立方体
         // near
@@ -205,7 +217,11 @@ SRendererDevice::SRendererDevice(int wide, int height)
         // top
         m_screenLines[3] = {0, -1.f, static_cast<float>(height)}; //（法向量(x,y) + Y偏置）设置可渲染的屏幕高度
     }
+<<<<<<< HEAD
     m_threadPool = std::make_unique<ThreadPool>(13, 13);
+=======
+    m_threadPool = std::make_unique<ThreadPool>(100, 100);
+>>>>>>> future
 }
 
 SRendererDevice::~SRendererDevice()
@@ -224,6 +240,10 @@ QImage& SRendererDevice::getBuffer() // 返回当前帧缓冲内的快照Colorbu
 
 bool SRendererDevice::saveImage(QString path) // 将当前帧缓冲的快照保存到对应路径
 {
+<<<<<<< HEAD
+=======
+    std::cout << "it is  SRendererDevice::saveImage" << std::endl;
+>>>>>>> future
     return m_frameBuffer.saveImage(path);
 }
 
@@ -239,6 +259,7 @@ void SRendererDevice::render() // 渲染入口
     }
 
     // 多线程加速入口
+<<<<<<< HEAD
     if(m_multiThread){
         // 将模型进行分块加载
         const int threadCount = m_threadPool->getThreadNum(); // 得到最大线程数量
@@ -257,6 +278,35 @@ void SRendererDevice::render() // 渲染入口
         }
         for(auto& future : futures){
             future.get();
+=======
+    if(m_multiThread || m_tbbThread){
+        if(m_multiThread){
+            //将模型进行分块加载
+            const int threadCount = m_threadPool->getThreadNum(); // 得到最大线程数量
+            const int chunkSize = triangleList.size() / threadCount; //得到块的大小
+            std::vector<std::future<void>> futures;
+            futures.reserve(threadCount);
+
+            for(int t = 0; t < threadCount; t++){
+                int start = t * chunkSize;
+                int end = (t == threadCount - 1) ? (triangleList.size()) : (start + chunkSize);
+                futures.push_back(m_threadPool->addTask([this, start, end, &triangleList](){
+                    for(int i = start; i < end; i++){
+                        this->processTriangle(triangleList[i]);
+                    }
+                }));
+            }
+            for(auto& future : futures){
+                future.get();
+            }
+        }else if(m_tbbThread){
+            tbb::parallel_for(tbb::blocked_range<size_t>(0, triangleList.size()),
+                              [&](tbb::blocked_range<size_t> r)
+                              {
+                                  for(size_t i = r.begin(); i < r.end(); i++)
+                                      processTriangle(triangleList[i]);
+                              });
+>>>>>>> future
         }
     }
     else // 非多线程入口
@@ -277,6 +327,14 @@ SRendererDevice& SRendererDevice::getInstance(int wide, int height) // 获取一
     static SRendererDevice Instance(wide, height);
     return Instance;
 }
+<<<<<<< HEAD
+=======
+
+SRFrameBuffer& SRendererDevice::getFrameBuffer()
+{
+    return m_frameBuffer;
+}
+>>>>>>> future
 //------------------------------------------
 // private
 void SRendererDevice::processTriangle(Triangle& tri) // 处理传入的三角形
@@ -304,6 +362,7 @@ void SRendererDevice::processTriangle(Triangle& tri) // 处理传入的三角形
             {
                 pointTriangle(ctri);
             }
+<<<<<<< HEAD
         }
     }
     else{
@@ -321,6 +380,24 @@ void SRendererDevice::processTriangle(Triangle& tri) // 处理传入的三角形
         {
             pointTriangle(tri);
         }
+=======
+            return;
+        }
+    }
+    executePerspectiveDivision(tri); // 透视除法
+    convertToScreen(tri); // 转换为屏幕坐标
+    if(m_rendererMode == RendererMode::Rasterization) // 应用光栅化
+    {
+        rasterizationTriangle(tri);
+    }
+    else if(m_rendererMode == RendererMode::Mesh) // 仅画出线框图
+    {
+        wireFrameTriangle(tri);
+    }
+    else if(m_rendererMode == RendererMode::VERTEX) // 仅画出顶点图
+    {
+        pointTriangle(tri);
+>>>>>>> future
     }
 }
 
@@ -331,11 +408,16 @@ void SRendererDevice::rasterizationTriangle(Triangle& tri) // 光栅化三角形
     {
         return;
     }
+<<<<<<< HEAD
     else if(triEdge.m_twoArea == 0) // 若三角形为一条线直接返回
+=======
+    if(triEdge.m_twoArea == 0) // 若三角形为一条线直接返回
+>>>>>>> future
     {
         return;
     }
 
+<<<<<<< HEAD
     if(m_simd){
         rasterizationTriangleSimd(tri);
     }
@@ -381,6 +463,49 @@ void SRendererDevice::rasterizationTriangle(Triangle& tri) // 光栅化三角形
             }
             triEdge.upY(cy);  // Y自增，边缘方程自增一定值
         }
+=======
+    // SIMD分支
+    if(m_simd){rasterizationTriangleSimd(tri); return;}
+
+    CoordI4D boundingBox = getBoundingBox(tri); // 求三角形的包围盒
+    int xMin = std::max(0, boundingBox[0]);
+    int yMin = std::max(0, boundingBox[1]);
+    int xMax = std::min(m_wide - 1, boundingBox[2]);
+    int yMax = std::min(m_height - 1, boundingBox[3]);
+
+    Fragment frag;
+    bool flag = false;// 是否进入三角形的标志
+    VectorI3D cy = triEdge.getResult(xMin, yMin); // 得到(xMin,yMin)即包围盒左上方顶点的对于三角形的边缘方程初始值
+    for(int y = yMin; y <= yMax; y++) // 向屏幕下方开始遍历
+    {
+        flag = false;
+        VectorI3D cx = cy;
+        for(int x = xMin; x <= xMax; x++){
+            // 判断遍历的点是否在三角形内
+            if(judgeInsideTriangle(triEdge, cx)){
+                flag = true; // 进入三角形后置 1
+                Vector3D bartcenTri = triEdge.getBarycentric(cx); // 得到该点的重心坐标用于插值
+                float screenDepth = calculateInterpolation<float>(tri[0].screenDepth, tri[1].screenDepth, tri[2].screenDepth, bartcenTri); // 对深度进行插值
+                if(m_frameBuffer.judgeDepth(x, y, screenDepth)) // 对该点进行深度测试，若成功更新深度则绘制该点
+                {
+                    float bartcen1 = bartcenTri.x / tri[0].ndcSpacePos.w;
+                    float bartcen2 = bartcenTri.y / tri[1].ndcSpacePos.w;
+                    float bartcen3 = bartcenTri.z / tri[2].ndcSpacePos.w;
+                    float bartcen = bartcen1 + bartcen2 + bartcen3;
+
+                    float viewDepth = 1.f / bartcen;// 计算深度插值
+                    frag = constructFragment(x, y, screenDepth, viewDepth, tri, bartcenTri); // 构造着色点
+                    m_shader->fragmentShader(frag); // 应用片着色
+                    m_frameBuffer.setPixel(frag.screenPos.x, frag.screenPos.y, frag.fragmentColor);
+                }
+            }
+            else if(flag){
+                break; // 离开三角形，换行
+            }
+            triEdge.upX(cx); // X自增，边缘方程自增一定值
+        }
+        triEdge.upY(cy);  // Y自增，边缘方程自增一定值
+>>>>>>> future
     }
 }
 
@@ -613,6 +738,7 @@ void SRendererDevice::rasterizationTriangleSimd(Triangle& tri)
     // 在x坐标以8个像素为单位遍历包围盒
     for(int y = yMin; y <= yMax; ++y)
     {
+<<<<<<< HEAD
         __m256i y_simd = _mm256_set1_epi32(y);// 初始化8个像素的y坐标SIMD向量 (都是当前行的y)
         for(int x_start = xMin; x_start <= xMax; x_start += 8)
         {
@@ -638,11 +764,39 @@ void SRendererDevice::rasterizationTriangleSimd(Triangle& tri)
 
             int inside_mask_int = _mm256_movemask_ps(inside_mask_ps);
             if (inside_mask_int == 0) {
+=======
+        __m256i simdY = _mm256_set1_epi32(y);// 初始化8个像素的y坐标SIMD向量 (都是当前行的y)
+        for(int xStart = xMin; xStart <= xMax; xStart += 8)
+        {
+            // 生成8个像素的x坐标SIMD向量
+            __m256i simdX = _mm256_setr_epi32(xStart, xStart + 1, xStart + 2, xStart + 3, xStart + 4, xStart + 5, xStart + 6, xStart + 7);
+
+            // 1. 计算8个像素的边缘方程值
+            SimdVectorI3D simdeEdgeVal = triEdgeSimd.getResultSimd(simdX, simdY);
+
+            // 2. 判断8个像素是否在三角形内部
+            __m256i simdInsideMask = triEdgeSimd.judgeInsideTriangleSimd(simdeEdgeVal);
+
+            // 处理包围盒右边界：创建一个掩码，只包含在 [xMin, xMax] 范围内的像素
+            __m256i simdCoordX = _mm256_add_epi32(_mm256_set1_epi32(xStart), _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7));
+            __m256i xInBoundsMask = _mm256_and_si256(
+                _mm256_cmpgt_epi32(simdCoordX, _mm256_set1_epi32(xMin - 1)), // x >= xMin
+                _mm256_cmpgt_epi32(_mm256_set1_epi32(xMax + 1), simdCoordX)  // x <= xMax
+                );
+            // 最终的内部掩码还需要与包围盒边界掩码求与
+            simdInsideMask = _mm256_and_si256(simdInsideMask, xInBoundsMask);
+            // 将整型掩码转换为浮点型掩码
+            __m256 insideMask = _mm256_castsi256_ps(simdInsideMask);
+
+            int insideMaskInt =  _mm256_movemask_ps(insideMask);
+            if (insideMaskInt == 0) {
+>>>>>>> future
                 // 如果这个8像素块没有任何像素在三角形内部（且符合规则和边界），直接跳过后续处理
                 continue;
             }
 
             // 3. 计算通过内部测试的像素的重心坐标
+<<<<<<< HEAD
             SimdVector3D barycentric_simd = triEdgeSimd.getBarycentricSimd(edge_values_simd);
 
             // 4. SIMD 属性插值 (仅对通过内部测试的像素进行有效插值)
@@ -665,12 +819,40 @@ void SRendererDevice::rasterizationTriangleSimd(Triangle& tri)
                 // === Fallback 到非 SIMD 片元着色和像素写入 ===
                 // ** 提取所有 SIMD 向量数据到数组 **
                 int screenPosX_arr[8], screenPosY_arr[8];
+=======
+            SimdVector3D simdBarycentric = triEdgeSimd.getBarycentricSimd(simdeEdgeVal);
+
+            // 4. SIMD 属性插值 (仅对通过内部测试的像素进行有效插值)
+            // 使用 blend 指令根据 insideMask 屏蔽插值结果
+            // 无效像素的插值结果将设置为一个可以被后续处理忽略的值
+            __m256 simdScreenDepthInterp =  calculateInterpolationSimdFloat(tri[0].screenDepth, tri[1].screenDepth, tri[2].screenDepth, simdBarycentric);
+
+            //构造片元
+            SimdFragment simdFragment = constructFragmentSimd(simdX, simdY, simdScreenDepthInterp, simdBarycentric, tri);
+
+            // 5. SIMD 深度测试
+            __m256 depthTestMask = m_frameBuffer.judgeDepthSimd(insideMask, simdFragment.screenPosX, simdFragment.screenPosY, simdFragment.screenDepth);
+
+            // 6. 合并掩码：只有同时在三角形内部且通过深度测试的像素才会被绘制
+            __m256 finalMask = _mm256_and_ps(insideMask, depthTestMask);
+
+            // 检查是否有任何像素通过了所有测试
+            int maskInt = _mm256_movemask_ps(finalMask);
+            if(maskInt != 0){
+                // m_shader->fragmentShaderSIMD(simdFragment, finalMask);
+                // m_frameBuffer.setPixelSIMD(simdX, simdY, simdFragment.fragmentColor, finalMask);
+
+                // === Fallback 到非 SIMD 片元着色和像素写入 ===
+                //  提取所有 SIMD 向量数据到数组
+                int screenPosXArr[8], screenPosYArr[8];
+>>>>>>> future
                 float screenDepth_arr[8];
                 float w_reciprocal_arr[8];
                 float texCoord_div_w_x_arr[8], texCoord_div_w_y_arr[8], texCoord_div_w_z_arr[8];
                 float normal_div_w_x_arr[8], normal_div_w_y_arr[8], normal_div_w_z_arr[8];
                 float worldSpacePos_div_w_x_arr[8], worldSpacePos_div_w_y_arr[8], worldSpacePos_div_w_z_arr[8];
                 // ** 替换 _mm256_storeu_epi32 的部分：手动提取整型元素 **
+<<<<<<< HEAD
                 __m128i screenPosX_low = _mm256_extractf128_si256(fragment_simd.screenPosX, 0); // 提取低 128 位 (前4个元素)
                 __m128i screenPosX_high = _mm256_extractf128_si256(fragment_simd.screenPosX, 1); // 提取高 128 位 (后4个元素)
                 __m128i screenPosY_low = _mm256_extractf128_si256(fragment_simd.screenPosY, 0); // 提取低 128 位
@@ -702,6 +884,38 @@ void SRendererDevice::rasterizationTriangleSimd(Triangle& tri)
                     {
                         int current_x = screenPosX_arr[i];
                         int current_y = screenPosY_arr[i];
+=======
+                __m128i screenPosX_low = _mm256_extractf128_si256(simdFragment.screenPosX, 0); // 提取低 128 位 (前4个元素)
+                __m128i screenPosX_high = _mm256_extractf128_si256(simdFragment.screenPosX, 1); // 提取高 128 位 (后4个元素)
+                __m128i screenPosY_low = _mm256_extractf128_si256(simdFragment.screenPosY, 0); // 提取低 128 位
+                __m128i screenPosY_high = _mm256_extractf128_si256(simdFragment.screenPosY, 1); // 提取高 128 位
+                for(int i = 0; i < 4; ++i) {
+                    screenPosXArr[i] = _mm_extract_epi32(screenPosX_low, i); // 从 128 位向量中提取 32 位整数
+                    screenPosYArr[i] = _mm_extract_epi32(screenPosY_low, i);
+                }
+                for(int i = 0; i < 4; ++i) {
+                    screenPosXArr[i + 4] = _mm_extract_epi32(screenPosX_high, i); // 从 128 位向量中提取 32 位整数
+                    screenPosYArr[i + 4] = _mm_extract_epi32(screenPosY_high, i);
+                }
+                // ** 替换结束 **
+                // ** 使用 _mm256_storeu_ps 提取浮点数据 ** (这部分没有报错，保留)
+                _mm256_storeu_ps(screenDepth_arr, simdFragment.screenDepth);
+                _mm256_storeu_ps(w_reciprocal_arr, simdFragment.viewDepth);
+                _mm256_storeu_ps(texCoord_div_w_x_arr, simdFragment.texCoord.x);
+                _mm256_storeu_ps(texCoord_div_w_y_arr, simdFragment.texCoord.y);
+                _mm256_storeu_ps(normal_div_w_x_arr, simdFragment.normal.x);
+                _mm256_storeu_ps(normal_div_w_y_arr, simdFragment.normal.y);
+                _mm256_storeu_ps(normal_div_w_z_arr, simdFragment.normal.z);
+                _mm256_storeu_ps(worldSpacePos_div_w_x_arr, simdFragment.worldSpacePos.x);
+                _mm256_storeu_ps(worldSpacePos_div_w_y_arr, simdFragment.worldSpacePos.y);
+                _mm256_storeu_ps(worldSpacePos_div_w_z_arr, simdFragment.worldSpacePos.z);
+
+                for (int i = 0; i < 8; ++i) {
+                    if ((maskInt >> i) & 1) // 如果第i个像素通过所有测试
+                    {
+                        int current_x = screenPosXArr[i];
+                        int current_y = screenPosYArr[i];
+>>>>>>> future
                         Fragment single_frag;
                         single_frag.screenPos = { current_x, current_y };
                         single_frag.screenDepth = screenDepth_arr[i];
@@ -716,6 +930,10 @@ void SRendererDevice::rasterizationTriangleSimd(Triangle& tri)
                         m_shader->fragmentShader(single_frag);
                         // 逐个设置像素
                         m_frameBuffer.setPixel(single_frag.screenPos.x, single_frag.screenPos.y, single_frag.fragmentColor);
+<<<<<<< HEAD
+=======
+
+>>>>>>> future
                     }
                 }
             }

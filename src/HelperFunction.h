@@ -135,6 +135,7 @@ Fragment constructFragment(int x, int y, float z, float viewDepth, const Triangl
     return frag;
 }
 
+<<<<<<< HEAD
 //SIMD
 SimdVector3D broadcastVector3D(const Vector3D& vec)
 {
@@ -144,11 +145,26 @@ SimdVector3D broadcastVector3D(const Vector3D& vec)
     res.z = _mm256_set1_ps(vec.z);
     return res;
 }
+=======
+// //SIMD
+// SimdVector3D broadcastVector3D(const Vector3D& vec)
+// {
+//     SimdVector3D res;
+//     res.x = _mm256_set1_ps(vec.x);
+//     res.y = _mm256_set1_ps(vec.y);
+//     res.z = _mm256_set1_ps(vec.z);
+//     return res;
+// }
+>>>>>>> future
 
 // SIMD 版本的浮点属性插值
 // bartcenTri_simd: 包含8个像素重心坐标 (alpha, beta, gamma) 的 SimdVector3D
 // 返回: 包含8个插值后浮点属性值的 __m256 向量
+<<<<<<< HEAD
 __m256 calculateInterpolationSimdFloat(float v0, float v1, float v2, const SimdVector3D& bartcenTri_simd)
+=======
+static inline __m256 calculateInterpolationSimdFloat(float v0, float v1, float v2, const SimdVector3D& bartcenTri_simd)
+>>>>>>> future
 {
     // 插值公式: result = alpha * v0 + beta * v1 + gamma * v2
     // 将顶点属性值复制到8个浮点数的SIMD向量中
@@ -164,11 +180,44 @@ __m256 calculateInterpolationSimdFloat(float v0, float v1, float v2, const SimdV
 }
 
 
+<<<<<<< HEAD
+=======
+static inline SimdVector2D calculateInterpolationSimdVector2D(const glm::vec2& v0, const glm::vec2& v1, const glm::vec2& v2, const SimdVector3D& bartcenTri_simd)
+{
+    // 插值公式: result = alpha * v0 + beta * v1 + gamma * v2
+    // 这里的 v0, v1, v2 是 Vector3D，意味着需要对每个分量 (x, y, z) 分别进行插值
+    SimdVector2D result_simd;
+    // 插值 x 分量
+    __m256 v0x_simd = _mm256_set1_ps(v0.x);
+    __m256 v1x_simd = _mm256_set1_ps(v1.x);
+    __m256 v2x_simd = _mm256_set1_ps(v2.x);
+    __m256 term0x = _mm256_mul_ps(bartcenTri_simd.x, v0x_simd);
+    __m256 term1x = _mm256_mul_ps(bartcenTri_simd.y, v1x_simd);
+    __m256 term2x = _mm256_mul_ps(bartcenTri_simd.z, v2x_simd);
+    result_simd.x = _mm256_add_ps(_mm256_add_ps(term0x, term1x), term2x);
+    // 插值 y 分量
+    __m256 v0y_simd = _mm256_set1_ps(v0.y);
+    __m256 v1y_simd = _mm256_set1_ps(v1.y);
+    __m256 v2y_simd = _mm256_set1_ps(v2.y);
+    __m256 term0y = _mm256_mul_ps(bartcenTri_simd.x, v0y_simd);
+    __m256 term1y = _mm256_mul_ps(bartcenTri_simd.y, v1y_simd);
+    __m256 term2y = _mm256_mul_ps(bartcenTri_simd.z, v2y_simd);
+    result_simd.y = _mm256_add_ps(_mm256_add_ps(term0y, term1y), term2y);
+
+    return result_simd;
+}
+
+
+>>>>>>> future
 // SIMD 版本的 Vector3D 属性插值
 // v0, v1, v2: 三角形三个顶点的 Vector3D 属性值
 // bartcenTri_simd: 包含8个像素重心坐标 (alpha, beta, gamma) 的 SimdVector3D
 // 返回: 包含8个插值后 Vector3D 属性值的 SimdVector3D 结构体
+<<<<<<< HEAD
 SimdVector3D calculateInterpolationSimdVector3D(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2, const SimdVector3D& bartcenTri_simd)
+=======
+static inline SimdVector3D calculateInterpolationSimdVector3D(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2, const SimdVector3D& bartcenTri_simd)
+>>>>>>> future
 {
     // 插值公式: result = alpha * v0 + beta * v1 + gamma * v2
     // 这里的 v0, v1, v2 是 Vector3D，意味着需要对每个分量 (x, y, z) 分别进行插值
@@ -200,9 +249,17 @@ SimdVector3D calculateInterpolationSimdVector3D(const glm::vec3& v0, const glm::
     return result_simd;
 }
 
+<<<<<<< HEAD
 SimdFragment constructFragmentSimd(const __m256i& x_simd, const __m256i& y_simd,
                                    const __m256& screenDepth_simd,
                                    const SimdVector3D& barycentric_simd,
+=======
+
+
+static inline SimdFragment constructFragmentSimd(const __m256i& x_simd, const __m256i& y_simd,
+                                   const __m256& screenDepth_simd,
+                                   const SimdVector3D& simdBarycentric,
+>>>>>>> future
                                    const Triangle& tri)
 {
     SimdFragment frag_simd;
@@ -214,6 +271,7 @@ SimdFragment constructFragmentSimd(const __m256i& x_simd, const __m256i& y_simd,
     float w0_recip = 1.f / tri[0].ndcSpacePos.w; // 使用 ndcSpacePos.w，与您原始代码一致
     float w1_recip = 1.f / tri[1].ndcSpacePos.w;
     float w2_recip = 1.f / tri[2].ndcSpacePos.w;
+<<<<<<< HEAD
     frag_simd.viewDepth = calculateInterpolationSimdFloat(w0_recip, w1_recip, w2_recip, barycentric_simd); // !!! IMPORTANT: Storing interpolated 1/w here
     // 插值属性除以 w (用于透视校正的分子)
     // 纹理坐标 / w 插值
@@ -221,16 +279,33 @@ SimdFragment constructFragmentSimd(const __m256i& x_simd, const __m256i& y_simd,
     glm::vec3 texCoord1_div_w = glm::vec3(tri[1].texCoord.x / tri[1].ndcSpacePos.w, tri[1].texCoord.y / tri[1].ndcSpacePos.w, 0.0f);
     glm::vec3 texCoord2_div_w = glm::vec3(tri[2].texCoord.x / tri[2].ndcSpacePos.w, tri[2].texCoord.y / tri[2].ndcSpacePos.w, 0.0f);
     frag_simd.texCoord = calculateInterpolationSimdVector3D(texCoord0_div_w, texCoord1_div_w, texCoord2_div_w, barycentric_simd);
+=======
+    frag_simd.viewDepth = calculateInterpolationSimdFloat(w0_recip, w1_recip, w2_recip, simdBarycentric); // !!! IMPORTANT: Storing interpolated 1/w here
+    // 插值属性除以 w (用于透视校正的分子)
+    // 纹理坐标 / w 插值
+    glm::vec2 texCoord0_div_w = glm::vec2(tri[0].texCoord.x / tri[0].ndcSpacePos.w, tri[0].texCoord.y / tri[0].ndcSpacePos.w); // Assuming Coord2D is vec2 like
+    glm::vec2 texCoord1_div_w = glm::vec2(tri[1].texCoord.x / tri[1].ndcSpacePos.w, tri[1].texCoord.y / tri[1].ndcSpacePos.w);
+    glm::vec2 texCoord2_div_w = glm::vec2(tri[2].texCoord.x / tri[2].ndcSpacePos.w, tri[2].texCoord.y / tri[2].ndcSpacePos.w);
+    frag_simd.texCoord = calculateInterpolationSimdVector2D(texCoord0_div_w, texCoord1_div_w, texCoord2_div_w, simdBarycentric);
+>>>>>>> future
     // 法线 / w 插值
     glm::vec3 normal0_div_w = tri[0].normal / tri[0].ndcSpacePos.w;
     glm::vec3 normal1_div_w = tri[1].normal / tri[1].ndcSpacePos.w;
     glm::vec3 normal2_div_w = tri[2].normal / tri[2].ndcSpacePos.w;
+<<<<<<< HEAD
     frag_simd.normal = calculateInterpolationSimdVector3D(normal0_div_w, normal1_div_w, normal2_div_w, barycentric_simd);
+=======
+    frag_simd.normal = calculateInterpolationSimdVector3D(normal0_div_w, normal1_div_w, normal2_div_w, simdBarycentric);
+>>>>>>> future
     // 世界空间位置 / w 插值
     glm::vec3 worldSpacePos0_div_w = tri[0].worldSpacePos / tri[0].ndcSpacePos.w;
     glm::vec3 worldSpacePos1_div_w = tri[1].worldSpacePos / tri[1].ndcSpacePos.w;
     glm::vec3 worldSpacePos2_div_w = tri[2].worldSpacePos / tri[2].ndcSpacePos.w;
+<<<<<<< HEAD
     frag_simd.worldSpacePos = calculateInterpolationSimdVector3D(worldSpacePos0_div_w, worldSpacePos1_div_w, worldSpacePos2_div_w, barycentric_simd);
+=======
+    frag_simd.worldSpacePos = calculateInterpolationSimdVector3D(worldSpacePos0_div_w, worldSpacePos1_div_w, worldSpacePos2_div_w, simdBarycentric);
+>>>>>>> future
 
     return frag_simd;
 }

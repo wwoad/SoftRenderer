@@ -8,11 +8,11 @@
 *.core
 *.moc
 *.o
-*.obj
+#*.obj
 *.orig
 *.rej
-*.so
-*.so.*
+#*.so
+#*.so.*
 *_pch.h.cpp
 *_resource.rc
 *.qm
@@ -89,8 +89,7 @@ CMakeLists.txt.user*
 *.slo
 *.lo
 *.o
-*.obj
-
+#*.obj
 # Precompiled Headers
 *.gch
 *.pch
@@ -108,8 +107,7 @@ CMakeLists.txt.user*
 *.lai
 *.la
 *.a
-*.lib
-
+#*.lib
 # Executables
 *.exe
 *.out

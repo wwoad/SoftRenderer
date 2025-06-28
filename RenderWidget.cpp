@@ -73,11 +73,27 @@ void RenderWidget::setMultiThread(bool val)
     SRendererDevice::getInstance().m_multiThread = val;
 }
 
+<<<<<<< HEAD
+=======
+void RenderWidget::setTBBMultiThread(bool val)
+{
+    SRendererDevice::getInstance().m_tbbThread = val;
+}
+
+>>>>>>> future
  void RenderWidget::setSIMD(bool val)
 {
     SRendererDevice::getInstance().m_simd = val;
 }
 
+<<<<<<< HEAD
+=======
+void RenderWidget::setFXAA(bool val)
+{
+    SRendererDevice::getInstance().m_useFXAA = val;
+}
+
+>>>>>>> future
 void RenderWidget::showFPS(qint64 &elapsed)
 {
     // int nowTime = QTime::currentTime().msecsSinceStartOfDay();
@@ -107,6 +123,10 @@ void RenderWidget::showFPS(qint64 &elapsed)
 
 void RenderWidget::saveImage(QString path)
 {
+<<<<<<< HEAD
+=======
+     std::cout << "it is  RenderWidget::saveImage" << std::endl;
+>>>>>>> future
     SRendererDevice::getInstance().saveImage(path);
 }
 

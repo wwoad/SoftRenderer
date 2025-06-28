@@ -1,7 +1,11 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
+<<<<<<< HEAD
 
+=======
+#include <QFileInfo>
+>>>>>>> future
 #include <QFileDialog>
 #include <QMainWindow>
 #include "RenderWidget.h"
@@ -51,7 +55,13 @@ private slots:
 
     void on_VertexCheckBox_checkStateChanged(const Qt::CheckState &arg1);
 
+<<<<<<< HEAD
     void on_actionMultithread_triggered();
+=======
+    void on_actionMultiThread_triggered();
+
+    void on_actionTbbMultiThread_triggered();
+>>>>>>> future
 
     void on_actionFaceCulling_triggered();
 
@@ -61,6 +71,11 @@ private slots:
 
     void on_actionTexture_triggered();
 
+<<<<<<< HEAD
+=======
+    void on_checkBox_checkStateChanged(const Qt::CheckState &arg1);
+
+>>>>>>> future
 private:
     Ui::Widget *ui;
     QColor m_specularColor;

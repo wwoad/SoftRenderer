@@ -1,6 +1,10 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+<<<<<<< HEAD
+=======
+#include <iostream>
+>>>>>>> future
 #include <QImage>
 #include <QString>
 #include "BasicDataStructure.h"
@@ -14,6 +18,10 @@ public:
     Texture() = default;
     bool loadFromImage(QString path);
     Color sample2D(const Coord2D& coord);
+<<<<<<< HEAD
+=======
+    SimdColor simdSample2D(const SimdVector2D& coordSimd);
+>>>>>>> future
 private:
     enum class TextureColorType
     {

@@ -7,6 +7,11 @@
 #include "BasicDataStructure.h"
 
 
+<<<<<<< HEAD
+=======
+extern bool FXAA;
+
+>>>>>>> future
 class Mesh
 {
 public:

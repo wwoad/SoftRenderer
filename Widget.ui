@@ -13,6 +13,12 @@
   <property name="windowTitle">
    <string>SoftRenderer</string>
   </property>
+<<<<<<< HEAD
+=======
+  <property name="windowIcon">
+   <iconset theme="QIcon::ThemeIcon::Computer"/>
+  </property>
+>>>>>>> future
   <widget class="QWidget" name="centralwidget">
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
@@ -38,7 +44,11 @@
      <bool>false</bool>
     </property>
     <property name="currentIndex">
+<<<<<<< HEAD
      <number>1</number>
+=======
+     <number>2</number>
+>>>>>>> future
     </property>
     <widget class="QWidget" name="Tab1">
      <property name="enabled">
@@ -81,8 +91,13 @@
       </property>
       <property name="minimumSize">
        <size>
+<<<<<<< HEAD
         <width>356</width>
         <height>300</height>
+=======
+        <width>1</width>
+        <height>1</height>
+>>>>>>> future
        </size>
       </property>
       <property name="maximumSize">
@@ -247,6 +262,22 @@
         <enum>Qt::Orientation::Horizontal</enum>
        </property>
       </widget>
+<<<<<<< HEAD
+=======
+      <widget class="QCheckBox" name="checkBox">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>20</y>
+         <width>96</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>stop</string>
+       </property>
+      </widget>
+>>>>>>> future
      </widget>
      <widget class="QGroupBox" name="groupBox_5">
       <property name="geometry">
@@ -718,7 +749,21 @@
     <property name="title">
      <string>Setting</string>
     </property>
+<<<<<<< HEAD
     <addaction name="actionMultithread"/>
+=======
+    <widget class="QMenu" name="menuMultiThread">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>ThreadMode</string>
+     </property>
+     <addaction name="actionMultiThread"/>
+     <addaction name="actionTbbMultiThread"/>
+    </widget>
+    <addaction name="menuMultiThread"/>
+>>>>>>> future
     <addaction name="actionFaceCulling"/>
     <addaction name="actionSIMD"/>
     <addaction name="actionTexture"/>
@@ -742,6 +787,7 @@
     <string>Exit</string>
    </property>
   </action>
+<<<<<<< HEAD
   <action name="actionMultithread">
    <property name="checkable">
     <bool>true</bool>
@@ -750,6 +796,8 @@
     <string>MultiThread</string>
    </property>
   </action>
+=======
+>>>>>>> future
   <action name="actionFaceCulling">
    <property name="checkable">
     <bool>true</bool>
@@ -777,6 +825,25 @@
     <string>Texture</string>
    </property>
   </action>
+<<<<<<< HEAD
+=======
+  <action name="actionMultiThread">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>MultiThread</string>
+   </property>
+  </action>
+  <action name="actionTbbMultiThread">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>TbbMultiThread</string>
+   </property>
+  </action>
+>>>>>>> future
  </widget>
  <customwidgets>
   <customwidget>

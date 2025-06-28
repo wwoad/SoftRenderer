@@ -24,9 +24,14 @@ public:
     int getHeight();
 
     //SIMD
+<<<<<<< HEAD
     __m256 judgeDepthSimd(const __m256& inside_mask_ps,  const __m256i& x_simd, const __m256i& y_simd, const __m256& z_simd);
     void setPixelSimd(const __m256& mask_simd, const __m256i& x_simd, const __m256i& y_simd, const SimdColor &colors_simd); // colors_simd现在使用SimdVector3D
     void updateDepthSimd(const __m256& mask_ps, const __m256i& x_simd, const __m256i& y_simd, const __m256& z_simd);
+=======
+    __m256 judgeDepthSimd(const __m256& insideMask,  const __m256i& x_simd, const __m256i& y_simd, const __m256& z_simd);
+    void setPixelSIMD(const __m256i& simdX, const __m256i& simdY, const SimdColor &simdColors, __m256 &simdMask);
+>>>>>>> future
 private:
     int m_wide;
     int m_height;

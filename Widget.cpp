@@ -3,6 +3,14 @@
 #include "ui_Widget.h"
 
 bool SHADERTEXTURE = false;
+<<<<<<< HEAD
+=======
+bool AMBIENT = false;
+bool DIFFUSE = false;
+bool SPECULAR = false;
+
+bool FXAA = false;
+>>>>>>> future
 
 Widget::Widget(QWidget *parent)
     : QMainWindow(parent)
@@ -21,7 +29,11 @@ Widget::~Widget()
 void Widget::setOption(Option option, bool val)
 {
     if(option == Option::MUTITHREAD){
+<<<<<<< HEAD
         ui->actionMultithread->setChecked(val);
+=======
+        ui->actionMultiThread->setChecked(val);
+>>>>>>> future
         ui->renderWidget->setMultiThread(val);
     }
     else if(option == Option::FACECULLING){
@@ -117,6 +129,10 @@ void Widget::on_actionopen_file_triggered()
     if(!modelFilelPath.isEmpty()){
         std::cout << " loading model" << std::endl;
         ui->renderWidget->loadmodel(modelFilelPath);
+<<<<<<< HEAD
+=======
+        ui->MeshcheckBox->setChecked(true);
+>>>>>>> future
     }
 
     else{
@@ -127,11 +143,40 @@ void Widget::on_actionopen_file_triggered()
 
 void Widget::on_actionsave_image_triggered()
 {
+<<<<<<< HEAD
     QString fileName = QFileDialog::getSaveFileName(this, "save Image", "", "PNG(*.png)");
     if(!fileName.isEmpty()){
         ui->renderWidget->saveImage(fileName);
     }
     else{
+=======
+    // ui->renderWidget->togglePause();
+
+    QString filter = "All Files (*);;JPG(*.jpg);;PNG(*.png)";
+    QString selectedFilter;
+
+    QString fileName = QFileDialog::getSaveFileName(this, "save Image", "", filter, &selectedFilter, // 传入地址，QFileDialog 会填充用户选择的过滤器字符串
+                                                    QFileDialog::DontUseNativeDialog );
+    if(!fileName.isEmpty()){
+        QFileInfo fileInfo(fileName);
+        QString suffix;
+        if (selectedFilter.contains("*.png", Qt::CaseInsensitive)) {
+            suffix = ".png";
+        } else if (selectedFilter.contains("*.jpg", Qt::CaseInsensitive) || selectedFilter.contains("*.jpeg", Qt::CaseInsensitive)) {
+            suffix = ".jpg"; // 统一使用 .jpg
+        } else if (selectedFilter.contains("*.bmp", Qt::CaseInsensitive)) {
+            suffix = ".bmp";
+        }
+        if (fileInfo.suffix().isEmpty() && !suffix.isEmpty()) {
+            fileName += suffix;
+        }
+
+        ui->renderWidget->saveImage(fileName);
+        ui->renderWidget->togglePause();
+    }
+    else{
+        // ui->renderWidget->togglePause();
+>>>>>>> future
         return;
     }
 }
@@ -188,9 +233,17 @@ void Widget::on_Yawdial_valueChanged(int value)
     setLightDir();
 }
 
+<<<<<<< HEAD
 void Widget::on_actionMultithread_triggered()
 {
     if(ui->actionMultithread->isChecked()){
+=======
+void Widget::on_actionMultiThread_triggered()
+{
+    ui->actionTbbMultiThread->setChecked(false);
+    if(ui->actionMultiThread->isChecked()){
+        ui->renderWidget->setTBBMultiThread(false);
+>>>>>>> future
         ui->renderWidget->setMultiThread(true);
     }
     else{
@@ -198,6 +251,21 @@ void Widget::on_actionMultithread_triggered()
     }
 }
 
+<<<<<<< HEAD
+=======
+void Widget::on_actionTbbMultiThread_triggered()
+{
+    ui->actionMultiThread->setChecked(false);
+    if(ui->actionTbbMultiThread->isChecked()){
+        ui->renderWidget->setMultiThread(false);
+        ui->renderWidget->setTBBMultiThread(true);
+    }
+    else{
+        ui->renderWidget->setTBBMultiThread(false);
+    }
+}
+
+>>>>>>> future
 void Widget::on_actionFaceCulling_triggered()
 {
     if(ui->actionFaceCulling->isChecked()){
@@ -218,7 +286,10 @@ void Widget::on_actionSIMD_triggered()
     }
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> future
 void Widget::on_actionTexture_triggered()
 {
     if(ui->actionTexture->isChecked()){
@@ -229,3 +300,18 @@ void Widget::on_actionTexture_triggered()
     }
 }
 
+<<<<<<< HEAD
+=======
+
+
+void Widget::on_checkBox_checkStateChanged(const Qt::CheckState &arg1)
+{
+    if(ui->checkBox->isChecked()){
+        ui->renderWidget->togglePause();
+    }else{
+        ui->renderWidget->togglePause();
+    }
+}
+
+
+>>>>>>> future
