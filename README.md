@@ -1,20 +1,20 @@
 # SoftRenderer
 SoftRenderer is a software rasterization renderer based on c++ 20. The main purpose of the project is to learn the principles of modern rendering. Currently only linux is supported.
 #### Window
+![window_0](res/readme/window_0.png)
 ![window_1](res/readme/window_1.png)
 ![window_2](res/readme/window_2.png)
-![window_3](res/readme/window_3.png)
 #### Rendering
+![rendering_0](res/readme/rendering_0.png)
 ![rendering_1](res/readme/rendering_1.png)
+![face_cullin](res/readme/face_culling.png)
 ![rendering_2](res/readme/rendering_2.png)
-![FaceCulling](res/readme/Face%20Culling.png)
 ![rendering_3](res/readme/rendering_3.png)
 ![rendering_4](res/readme/rendering_4.png)
 ![rendering_5](res/readme/rendering_5.png)
 ![rendering_6](res/readme/rendering_6.png)
-![rendering_7](res/readme/rendering_7.png)
+![gif_0](res/readme/gif_0.gif)
 ![gif_1](res/readme/gif_1.gif)
-![gif_2](res/readme/gif_2.gif)
 ---
 
 ### Dependencies
@@ -67,6 +67,7 @@ Live parameter tuning for visual effects
 - Compiler: GCC 11+ or Clang 12+ (C++20)
 - CMake: 3.20+
 ###### Build & Run
+
 ```cpp
 #---------------
 # Ubuntu/Debian
